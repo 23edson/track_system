@@ -1,0 +1,9 @@
+{
+    "name": "track_system",
+    "version": "1.0.0",
+    "private": true,
+    "workspaces": [
+        "services/*",
+        "resources*"
+    ]
+}

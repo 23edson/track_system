@@ -1,0 +1,6 @@
+node_modules/
+services/gateway/node_modules/
+services/packages/node_modules/
+services/socket/node_modules/
+services/loca
+services/packages/dist/
