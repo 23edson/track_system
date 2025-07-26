@@ -1,22 +1,31 @@
 import mongoose from 'mongoose';
 import amqp from 'amqplib';
-import Location from './models/location';
+import Location from './domain/entity/Location';
+import { DatabaseConnectionMongo } from './infraestructure/database';
+import { RabbitMQConsumer } from './infraestructure/rabbitMQConsumer';
+import { HandleLocationUpdate } from './application/usecase/UpdateLocation';
 
 
-mongoose.connect('mongodb://mongo:27017/tracking');
+async function main() {
 
-(async () => {
+    try {
+        const database = new DatabaseConnectionMongo('mongodb://mongo:27017/tracking');
 
-    const rabbitConnection = await amqp.connect('amqp://admin:admin@rabbitmq_container');
+        await database.connect();
 
-    const channel = await rabbitConnection.createChannel();
-    await channel.assertQueue('locations_update')
+        const rabbitMQ = new RabbitMQConsumer()
+        await rabbitMQ.connect('amqp://admin:admin@rabbitmq_container')
 
-    channel.consume('locations_update', async (msg) => {
-        if (msg) {
-            const data = JSON.parse(msg.content.toString())
-            await Location.create(data);
-            channel.ack(msg)
-        }
-    })
-})();
+        const locationUserCase = new HandleLocationUpdate()
+        await rabbitMQ.startConsuming('location_update', async (msg) => {
+
+            console.log('Received message:', msg.content.toString());
+            await locationUserCase.execute(msg.content.toString());
+        })
+
+
+    } catch (error) {
+        console.log('Error starting location service:', error);
+    }
+}
+main()
