@@ -4,6 +4,7 @@ import Location from './domain/entity/Location';
 import { DatabaseConnectionMongo } from './infraestructure/database';
 import { RabbitMQConsumer } from './infraestructure/rabbitMQConsumer';
 import { HandleLocationUpdate } from './application/usecase/UpdateLocation';
+import LocationRepository from './application/repository/LocationRepository';
 
 
 async function main() {
@@ -16,11 +17,12 @@ async function main() {
         const rabbitMQ = new RabbitMQConsumer()
         await rabbitMQ.connect('amqp://admin:admin@rabbitmq_container')
 
-        const locationUserCase = new HandleLocationUpdate()
+        const locationRepository = new LocationRepository(database);
+        const locationUserCase = new HandleLocationUpdate(locationRepository);
         await rabbitMQ.startConsuming('location_update', async (msg) => {
 
-            console.log('Received message:', msg.content.toString());
-            await locationUserCase.execute(msg.content.toString());
+            console.log('Received message:', msg);
+            await locationUserCase.execute(msg);
         })
 
 

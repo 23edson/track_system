@@ -52,7 +52,6 @@ export class DatabaseConnectionMongo implements DatabaseConnection {
                     return await Model.findById(query);
                 case 'create':
                     console.log('Creating package with data:', query);
-                    console.log(await Model.create(query))
                     return await Model.create(query);
                 case 'updateOne':
                     // query = { filter, update }

@@ -1,6 +1,9 @@
 import Location from "../../domain/entity/Location";
+import LocationRepository from "../repository/LocationRepository";
 
 export class HandleLocationUpdate {
+
+    constructor(readonly locationRepository: LocationRepository) { }
 
     async execute(input: string) {
 
@@ -10,16 +13,16 @@ export class HandleLocationUpdate {
                 throw new Error('Input is not defined');
             }
 
-            const inputData = JSON.parse(input) as Input;
+            const inputData = input as any as Input;
 
             const locationData = Location.create(
                 inputData.driverId,
-                inputData.latitude,
-                inputData.longitude,
+                inputData.location.latitude,
+                inputData.location.longitude,
                 new Date()
             );
 
-            Location.create(locationData.driverId, locationData.latitude, locationData.longitude);
+            const locationRepository = await this.locationRepository.createLocation(locationData);
 
         } catch (error: any) {
             console.error('Error  location update:', error);
@@ -30,6 +33,9 @@ export class HandleLocationUpdate {
 
 interface Input {
     driverId: string;
-    latitude: number;
-    longitude: number;
+    location: {
+        latitude: number;
+        longitude: number;
+    }
+
 }

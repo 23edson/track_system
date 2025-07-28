@@ -35,6 +35,8 @@ export class RabbitMQConsumer implements MessageConsumer {
         await this.channel.assertQueue(queueName);
         this.channel.consume(queueName, async (msg) => {
             if (msg) {
+
+                console.log('Received message on queue:', msg);
                 try {
                     const data = JSON.parse(msg.content.toString());
                     await messageHandler(data);
