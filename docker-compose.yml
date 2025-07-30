@@ -66,5 +66,17 @@ services:
     depends_on:
       - rabbitmq
 
+  frontend:
+    build: 
+      context: .
+      dockerfile: ./services/frontend/Dockerfile
+    container_name: frontend_container
+    ports:
+      - "8080:80"
+    depends_on:
+      - gateway
+      - packages_service
+      - location_service
+      - socket_service
 volumes:
   mongo_data:
