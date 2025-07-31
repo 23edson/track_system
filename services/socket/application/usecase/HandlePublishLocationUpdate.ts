@@ -1,13 +1,13 @@
-import { MessagePublisher } from "../../infrastructure/rabbitMQ";
+import { Messager } from "../../infrastructure/rabbitMQ";
 import Location from "../../domain/entity/Location";
 
-export class HandleLocationUpdate {
+export class HandlePublishLocationUpdate {
 
-    private messagePublisher: MessagePublisher;
+    private messageQueue: Messager;
     private queueName: string;
 
-    constructor(messagePublisher: MessagePublisher, queueName: string = 'location_update') {
-        this.messagePublisher = messagePublisher;
+    constructor(messageQueue: Messager, queueName: string = 'location_update') {
+        this.messageQueue = messageQueue;
         this.queueName = queueName;
     }
 
@@ -27,7 +27,7 @@ export class HandleLocationUpdate {
                 longitude: locationData.longitude,
             },
         };
-        await this.messagePublisher.publish(this.queueName, message);
+        await this.messageQueue.publish(this.queueName, message);
     }
 }
 

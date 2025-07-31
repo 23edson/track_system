@@ -1,4 +1,4 @@
-import { HandleLocationUpdate } from "../application/usecase/LocationUpdate";
+import { HandlePublishLocationUpdate } from "../application/usecase/HandlePublishLocationUpdate";
 import { SocketServer } from "../infrastructure/socketServer";
 import Joi from 'joi';
 
@@ -14,9 +14,9 @@ const locationUpdateSchema = Joi.object({
 
 export class LocationSocketController {
     private socketServer: SocketServer;
-    private handleLocationUpdate: HandleLocationUpdate;
+    private handleLocationUpdate: HandlePublishLocationUpdate;
 
-    constructor(socketServer: SocketServer, handleLocationUpdate: HandleLocationUpdate) {
+    constructor(socketServer: SocketServer, handleLocationUpdate: HandlePublishLocationUpdate) {
         this.socketServer = socketServer;
         this.handleLocationUpdate = handleLocationUpdate;
 
@@ -43,6 +43,10 @@ export class LocationSocketController {
                     console.error('Error location update:', error);
                 }
             });
+
+            socket.on('unificated_location_update', async (data: any) => {
+                socket.join(data.driverId);
+            })
         });
     }
 }

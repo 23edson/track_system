@@ -1,12 +1,13 @@
 import amqp from 'amqplib';
 
-export interface MessagePublisher {
+export interface Messager {
     publish(queue: string, message: any): Promise<void>;
     connect(url: string): Promise<void>;
     disconnect(): Promise<void>;
+    consumeQueue(queue: string, callback: (message: any) => void): Promise<void>;
 }
 
-export class RabbitMQPublisher implements MessagePublisher {
+export class RabbitMQ implements Messager {
     private connection: amqp.ChannelModel | null = null;
     private channel: amqp.Channel | null = null;
 
@@ -27,6 +28,20 @@ export class RabbitMQPublisher implements MessagePublisher {
         }
         await this.channel.assertQueue(queue);
         this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+    }
+
+    async consumeQueue(queue: string, callback: (message: any) => void): Promise<void> {
+        if (!this.channel) {
+            throw new Error('Channel is not initialized');
+        }
+        await this.channel.assertQueue(queue);
+        this.channel.consume(queue, (msg) => {
+            if (msg) {
+                const messageContent = JSON.parse(msg.content.toString());
+                callback(messageContent);
+                this.channel?.ack(msg);
+            }
+        });
     }
 
     async disconnect(): Promise<void> {

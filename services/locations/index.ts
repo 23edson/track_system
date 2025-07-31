@@ -23,6 +23,15 @@ async function main() {
 
             console.log('Received message:', msg);
             await locationUserCase.execute(msg);
+
+            rabbitMQ.sendTOQueue('location_broadcast', Buffer.from(JSON.stringify({
+                driverId: msg.driverId,
+                location: {
+                    latitude: msg.location.latitude,
+                    longitude: msg.location.longitude,
+                }
+            })));
+            console.log('Message sent to location_broadcast queue');
         })
 
 

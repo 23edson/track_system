@@ -2,9 +2,10 @@
 
 import http from 'http';
 import { SocketIOServer } from './infrastructure/socketServer';
-import { HandleLocationUpdate } from './application/usecase/LocationUpdate';
-import { RabbitMQPublisher } from './infrastructure/rabbitMQ';
+import { HandlePublishLocationUpdate } from './application/usecase/HandlePublishLocationUpdate';
+import { RabbitMQ } from './infrastructure/rabbitMQ';
 import { LocationSocketController } from './controllers/LocationSocketController';
+import { BroadCastConsumeUpdateLocation } from './application/usecase/BroadCastUpdateLocation';
 
 
 async function main() {
@@ -13,11 +14,12 @@ async function main() {
         const server = http.createServer();
         const socketServer = new SocketIOServer(server)
 
-        const rabbitMQ = new RabbitMQPublisher()
+        const rabbitMQ = new RabbitMQ()
         await rabbitMQ.connect('amqp://admin:admin@rabbitmq_container')
 
-        const locationUpdateUseCase = new HandleLocationUpdate(rabbitMQ)
-        const locationSocketController = new LocationSocketController(socketServer, locationUpdateUseCase);
+        const locationUpdateUseCase = new HandlePublishLocationUpdate(rabbitMQ)
+        new LocationSocketController(socketServer, locationUpdateUseCase);
+        new BroadCastConsumeUpdateLocation(rabbitMQ, 'location_broadcast', socketServer);
 
         socketServer.listen(4000, () => {
             console.log('Socket service is running on port 4000');

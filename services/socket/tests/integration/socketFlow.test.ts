@@ -2,7 +2,7 @@
 import { io as Client } from 'socket.io-client';
 import { SocketIOServer } from '../../infrastructure/socketServer';
 
-import { HandleLocationUpdate } from '../../application/usecase/LocationUpdate';
+import { HandlePublishLocationUpdate } from '../../application/usecase/HandlePublishLocationUpdate';
 import { LocationSocketController } from '../../controllers/LocationSocketController';
 import { jest } from '@jest/globals';
 import http from 'http';
@@ -30,7 +30,7 @@ describe('Socket Service Integration', () => {
 
         // Instancia a aplicação com o mock
         socketServer = new SocketIOServer(server);
-        const handleLocationUpdateUseCase = new HandleLocationUpdate(mockMessagePublisher);
+        const handleLocationUpdateUseCase = new HandlePublishLocationUpdate(mockMessagePublisher);
         new LocationSocketController(socketServer, handleLocationUpdateUseCase);
 
         // Inicia o servidor Socket.IO

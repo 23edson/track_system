@@ -5,6 +5,8 @@ import http from 'http';
 export interface SocketServer {
     on(event: string, listener: (...args: any[]) => void): this;
     onConnection(listener: (socket: any) => void): this;
+    emit(event: string, ...args: any[]): boolean;
+    listen(port: number, callback?: () => void): void;
 }
 
 
@@ -35,5 +37,9 @@ export class SocketIOServer implements SocketServer {
     onConnection(listener: (socket: any) => void): this {
         this.io.on('connection', listener);
         return this;
+    }
+
+    emit(event: string, ...args: any[]): boolean {
+        return this.io.emit(event, ...args);
     }
 }

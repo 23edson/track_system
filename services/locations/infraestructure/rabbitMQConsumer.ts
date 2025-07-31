@@ -4,6 +4,7 @@ export interface MessageConsumer {
     startConsuming(queueName: string, messageHandler: (message: any) => Promise<void>): Promise<void>;
     connect(url: string): Promise<void>;
     disconnect(): Promise<void>;
+    sendTOQueue(queue: string, message: any): Promise<void>;
 }
 export class RabbitMQConsumer implements MessageConsumer {
     private connection: amqp.ChannelModel | null = null;
@@ -47,6 +48,15 @@ export class RabbitMQConsumer implements MessageConsumer {
                 }
             }
         });
+    }
+
+    async sendTOQueue(queue: string, message: any): Promise<void> {
+        if (!this.channel) {
+            throw new Error('Channel is not initialized');
+        }
+        await this.channel.assertQueue(queue);
+        this.channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)));
+        console.log('Message sent to queue:', queue, message);
     }
 
     async disconnect(): Promise<void> {

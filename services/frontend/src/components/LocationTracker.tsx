@@ -1,17 +1,13 @@
 import { useEffect, useState } from 'react';
 import socket from '../sockets/socket';
 
-type Location = {
-    latitude: number;
-    longitude: number;
-    timestamp: string;
-};
-
-export default function LocationTracker({ entregadorId }: { entregadorId: string }) {
-    const [locations, setLocations] = useState<Location[]>([]);
+export default function LocationTracker({ driverId }: { driverId: string }) {
+    const [locations, setLocations] = useState<LocationDriver[]>([]);
 
     useEffect(() => {
-        socket.emit('joinRoom', entregadorId); // opcional
+
+        console.log('Iniciando rastreamento para o driver:', driverId);
+        socket.emit('unificated_location_update', driverId);
 
         socket.on('locationBroadcast', (data) => {
             console.log('Nova localização recebida:', data);
@@ -22,7 +18,7 @@ export default function LocationTracker({ entregadorId }: { entregadorId: string
         return () => {
             socket.off('locationBroadcast');
         };
-    }, [entregadorId]);
+    }, [driverId]);
 
     return (
         <div>
@@ -30,7 +26,7 @@ export default function LocationTracker({ entregadorId }: { entregadorId: string
             <ul>
                 {locations.map((location, index) => (
                     <li key={index}>
-                        Lat: {location.latitude} | Lng: {location.longitude} | {new Date(location.timestamp).toLocaleTimeString()}
+                        Latitude: {location.latitude} | Longitude: {location.longitude} | {new Date(location.timestamp).toLocaleTimeString()}
                     </li>
                 ))}
             </ul>
