@@ -29,9 +29,6 @@ export class HttpServerExpress implements HttpServer {
             try {
 
                 const response = await callback(req.params, req.body);
-
-                console.log('esseeeee')
-                console.log(response)
                 res.status(200).json(response);
 
             } catch (error: any) {

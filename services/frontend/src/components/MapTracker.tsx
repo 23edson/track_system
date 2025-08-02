@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import socket from "../sockets/socket";
 import Leaflet from 'leaflet';
 
-const markerIcon = new Leaflet.Icon({
+export const markerIcon = new Leaflet.Icon({
     iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
     iconSize: [25, 41],
     iconAnchor: [12, 41]
@@ -19,17 +19,19 @@ export default function MapTracker({ driverId }: { driverId: string }) {
 
         socket.on('locationBroadcast', (data) => {
 
-            if (data.driverId === driverId) {
-                setLocations((prev) => [
-                    ...prev,
-                    {
-                        latitude: data.latitude,
-                        longitude: data.longitude,
-                        timestamp: data.timestamp
-                    }
-                ]);
-            }
+            if (data.driverId !== driverId) return;
+
             console.log('Nova localização recebida:', data);
+            setLocations((prev) => [
+                ...prev,
+                {
+                    driverId: data.driverId,
+                    latitude: data.latitude,
+                    longitude: data.longitude,
+                    timestamp: data.timestamp
+                }
+            ]);
+
             setLocations((prev) => [...prev, data]);
         });
 

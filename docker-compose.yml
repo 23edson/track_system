@@ -50,6 +50,8 @@ services:
       context: .
       dockerfile: ./services/locations/Dockerfile 
     container_name: location_service_container
+    ports:
+      - "3004:3004"
     depends_on:
       - mongo
       - rabbitmq
