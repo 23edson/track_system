@@ -74,7 +74,7 @@ services:
       dockerfile: ./services/frontend/Dockerfile
     container_name: frontend_container
     ports:
-      - "8080:80"
+      - "8081:80"
     depends_on:
       - gateway
       - packages_service

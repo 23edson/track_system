@@ -1,4 +1,4 @@
-import Location from "./mongoSchema";
+import { Delivery, Location } from "./mongoSchemas";
 import mongoose from "mongoose";
 
 export default interface DatabaseConnection {
@@ -31,6 +31,7 @@ export class DatabaseConnectionMongo implements DatabaseConnection {
 
             // Register models
             this.models.Location = Location;
+            this.models.Delivery = Delivery
 
         } catch (err) {
             this.isConnected = false;
@@ -51,12 +52,11 @@ export class DatabaseConnectionMongo implements DatabaseConnection {
                 case 'findById':
                     return await Model.findById(query);
                 case 'create':
-                    console.log('Creating package with data:', query);
                     return await Model.create(query);
                 case 'updateOne':
-                    // query = { filter, update }
                     return await Model.updateOne(query.filter, query.update);
-                // ... outros casos
+                case 'deleteOne':
+                    return await Model.deleteOne(query);
                 default:
                     throw new Error(`Unsupported query operation: ${operation}`);
             }

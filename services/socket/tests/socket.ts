@@ -29,9 +29,11 @@ const coordenadas = gerarLocalizacoesCrescentes(-27.1006, -52.6152, 15);
 
 
 const driversSimulados = Array.from({ length: randomInt(1, 5) }).map(() => randomUUID());
+const packagesSimulados = Array.from({ length: randomInt(1, 5) }).map(() => randomUUID());
 
 // driverId for testing purposes
 driversSimulados.push('123e4567-e89b-12d3-a456-426614174000')
+packagesSimulados.push('123e4567-e89b-12d3-a456-426614174001');
 
 
 setInterval(() => {
@@ -41,6 +43,7 @@ setInterval(() => {
         console.log("Enviando localização:", localizacao);
         socket.emit("location_update", {
             driverId: driversSimulados[randomInt(0, driversSimulados.length)],
+            packageId: packagesSimulados[randomInt(0, packagesSimulados.length)],
             ...localizacao,
         });
     } else {

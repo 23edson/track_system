@@ -28,6 +28,7 @@ export default function RouteTracker({ driverId }: { driverId: string }) {
                 ...prev,
                 {
                     driverId: data.driverId,
+                    packageId: data.packageId,
                     latitude: data.latitude,
                     longitude: data.longitude,
                     timestamp: data.timestamp

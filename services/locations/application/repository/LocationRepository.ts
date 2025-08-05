@@ -4,6 +4,7 @@ import DatabaseConnection, { DatabaseConnectionMongo } from "../../infraestructu
 interface LocationRepositoryInterface {
     createLocation(location_data: Location): Promise<any>;
     getLocationById(id: string): Promise<any>;
+    getLocationsByPackageId(packageId: string): Promise<any>;
     updateLocation(id: string, data: any): Promise<any>;
     deleteLocation(id: string): Promise<void>;
 }
@@ -16,6 +17,11 @@ export default class LocationRepository implements LocationRepositoryInterface {
     async createLocation(location_data: Location) {
         const newLocation = await this.connection.query('Location', location_data, 'create');
         return newLocation;
+    }
+
+    getLocationsByPackageId(packageId: string): Promise<any> {
+        console.log('Fetching locations for package ID:', packageId);
+        return this.connection.query('Location', { packageId }, 'find');
     }
 
     getLocationById(id: string): Promise<any> {

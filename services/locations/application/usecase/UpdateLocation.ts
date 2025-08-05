@@ -17,6 +17,7 @@ export class HandleLocationUpdate {
 
             const locationData = Location.create(
                 inputData.driverId,
+                inputData.packageId,
                 inputData.location.latitude,
                 inputData.location.longitude,
                 new Date()
@@ -33,6 +34,7 @@ export class HandleLocationUpdate {
 
 interface Input {
     driverId: string;
+    packageId: string;
     location: {
         latitude: number;
         longitude: number;

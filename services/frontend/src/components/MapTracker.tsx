@@ -26,13 +26,12 @@ export default function MapTracker({ driverId }: { driverId: string }) {
                 ...prev,
                 {
                     driverId: data.driverId,
+                    packageId: data.packageId,
                     latitude: data.latitude,
                     longitude: data.longitude,
                     timestamp: data.timestamp
                 }
             ]);
-
-            setLocations((prev) => [...prev, data]);
         });
 
         return () => {

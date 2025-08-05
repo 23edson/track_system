@@ -16,12 +16,14 @@ export class HandlePublishLocationUpdate {
 
         const locationData = Location.create(
             input.driverId,
+            input.packageId,
             input.latitude,
             input.longitude,
             new Date()
         );
         const message = {
             driverId: locationData.driverId,
+            packageId: locationData.packageId,
             location: {
                 latitude: locationData.latitude,
                 longitude: locationData.longitude,
@@ -33,6 +35,7 @@ export class HandlePublishLocationUpdate {
 
 interface Input {
     driverId: string;
+    packageId: string;
     latitude: number;
     longitude: number;
 }

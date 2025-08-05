@@ -8,6 +8,9 @@ import LocationRepository from './application/repository/LocationRepository';
 import { HttpServerExpress } from '@track_system/resources/http';
 import LocationController from './controllers/LocationController';
 import { GetLocation } from './application/usecase/GetLocation';
+import DeliveryRepository from './application/repository/DeliveryRepository';
+import { HandleDeliveryUpdate } from './application/usecase/UpdateDelivery';
+import { GetPackageLocation } from './application/usecase/GetPackageLocation';
 
 
 async function main() {
@@ -24,13 +27,18 @@ async function main() {
         const locationRepository = new LocationRepository(database);
         const locationUpdateUserCase = new HandleLocationUpdate(locationRepository);
         const locationGetUserCase = new GetLocation(locationRepository);
+        const locationGetByPackageIdUseCase = new GetPackageLocation(locationRepository);
+
+        const deliveryUpdateUserCase = new HandleDeliveryUpdate(new DeliveryRepository(database));
         await rabbitMQ.startConsuming('location_update', async (msg) => {
 
             console.log('Received message:', msg);
             await locationUpdateUserCase.execute(msg);
+            await deliveryUpdateUserCase.execute(msg);
 
             rabbitMQ.sendTOQueue('location_broadcast', Buffer.from(JSON.stringify({
                 driverId: msg.driverId,
+                packageId: msg.packageId,
                 location: {
                     latitude: msg.location.latitude,
                     longitude: msg.location.longitude,
@@ -38,7 +46,7 @@ async function main() {
             })));
             console.log('Message sent to location_broadcast queue');
         })
-        new LocationController(httpServer, locationGetUserCase);
+        new LocationController(httpServer, locationGetUserCase, locationGetByPackageIdUseCase);
         httpServer.listen(3004)
 
 

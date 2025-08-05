@@ -5,6 +5,7 @@ import Joi from 'joi';
 
 const locationUpdateSchema = Joi.object({
     driverId: Joi.string().uuid().required(),
+    packageId: Joi.string().uuid().required(),
     latitude: Joi.number().min(-90).max(90).required(),
     longitude: Joi.number().min(-180).max(180).required(),
     createdAt: Joi.date().default(() => new Date())

@@ -1,6 +1,7 @@
 
 type LocationDriver = {
-    driverId: string
+    driverId: string;
+    packageId: string;
     latitude: number;
     longitude: number;
     timestamp: string;
